@@ -2374,10 +2374,14 @@ function getLevelInfo(xp) {
 async function loadAll() {
   try {
     const uid = state.userId;
+    if (!uid) {
+      console.error('[loadAll] user_id is null — abortando para evitar buscar progresso de outros usuários');
+      return false;
+    }
     const [
       { data: modules },
       { data: lessons },
-      { data: progress },
+      { data: progress, error: errProgress },
       { data: notes },
       { data: videos },
       { data: projects },
@@ -2395,6 +2399,12 @@ async function loadAll() {
       db.from('achievements').select('*'),
       db.from('unlocked_achievements').select('*').eq('user_id', uid),
     ]);
+
+    if (errProgress) {
+      console.error('[loadAll] Erro ao carregar progress:', errProgress);
+      console.warn('[loadAll] Possível causa: RLS bloqueando a query ou user_id inválido. uid =', uid);
+    }
+    console.log('[loadAll] progress carregado para uid', uid, '— linhas:', progress?.length ?? 0);
 
     state.modules = modules || [];
     state.lessons = lessons || [];
