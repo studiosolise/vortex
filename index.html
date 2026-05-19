@@ -1947,17 +1947,33 @@ async function initAuth() {
   }
 
   // Check role
-  const { data: profile } = await db
+  const { data: profile, error: profileError } = await db
     .from('profiles')
     .select('role, display_name')
     .eq('id', session.user.id)
     .single();
 
+  console.log('[initAuth] profile result:', profile, 'error:', profileError);
+
+  if (profileError) {
+    console.error('[initAuth] Erro ao carregar perfil:', profileError);
+    showLoginScreen();
+    const errEl = document.getElementById('login-error');
+    if (errEl) {
+      errEl.textContent = 'Erro ao carregar perfil. Tente novamente.';
+      errEl.classList.add('visible');
+    }
+    await db.auth.signOut();
+    return;
+  }
+
   if (profile && profile.role === 'admin') {
+    console.log('[initAuth] Usuário é admin, redirecionando para admin.html');
     window.location.href = 'admin.html';
     return;
   }
 
+  console.log('[initAuth] Usuário é aluno, carregando app do aluno');
   state.session = session;
   state.userId = session.user.id;
 
@@ -2002,17 +2018,31 @@ async function doLogin() {
   }
 
   // Check role
-  const { data: profile } = await db
+  const { data: profile, error: profileError } = await db
     .from('profiles')
     .select('role')
     .eq('id', data.session.user.id)
     .single();
 
+  console.log('[doLogin] profile result:', profile, 'error:', profileError);
+
+  if (profileError) {
+    console.error('[doLogin] Erro ao carregar perfil:', profileError);
+    btn.disabled = false;
+    btn.textContent = 'Entrar no VORTEX';
+    errEl.textContent = 'Erro ao carregar perfil. Tente novamente.';
+    errEl.classList.add('visible');
+    await db.auth.signOut();
+    return;
+  }
+
   if (profile && profile.role === 'admin') {
+    console.log('[doLogin] Usuário é admin, redirecionando para admin.html');
     window.location.href = 'admin.html';
     return;
   }
 
+  console.log('[doLogin] Usuário é aluno, carregando app do aluno');
   state.session = data.session;
   state.userId = data.session.user.id;
   btn.disabled = false;

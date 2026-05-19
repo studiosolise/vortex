@@ -1153,18 +1153,29 @@ async function initAuth() {
     return;
   }
 
-  const { data: profile } = await db
+  const { data: profile, error: profileError } = await db
     .from('profiles')
     .select('role')
     .eq('id', session.user.id)
     .single();
 
-  if (!profile || profile.role !== 'admin') {
+  console.log('[admin initAuth] profile result:', profile, 'error:', profileError);
+
+  if (profileError) {
+    console.error('[admin initAuth] Erro ao carregar perfil:', profileError);
     await db.auth.signOut();
     window.location.href = 'index.html';
     return;
   }
 
+  if (!profile || profile.role !== 'admin') {
+    console.warn('[admin initAuth] Acesso negado: role =', profile?.role);
+    await db.auth.signOut();
+    window.location.href = 'index.html';
+    return;
+  }
+
+  console.log('[admin initAuth] Acesso admin confirmado');
   state.session = session;
   state.userId = session.user.id;
   showApp();
@@ -1207,13 +1218,26 @@ async function doLogin() {
     return;
   }
 
-  const { data: profile } = await db
+  const { data: profile, error: profileError } = await db
     .from('profiles')
     .select('role')
     .eq('id', data.session.user.id)
     .single();
 
+  console.log('[admin doLogin] profile result:', profile, 'error:', profileError);
+
+  if (profileError) {
+    console.error('[admin doLogin] Erro ao carregar perfil:', profileError);
+    await db.auth.signOut();
+    btn.disabled = false;
+    btn.textContent = 'Entrar no Painel';
+    errEl.textContent = 'Erro ao carregar perfil. Tente novamente.';
+    errEl.classList.add('visible');
+    return;
+  }
+
   if (!profile || profile.role !== 'admin') {
+    console.warn('[admin doLogin] Acesso negado: role =', profile?.role);
     await db.auth.signOut();
     btn.disabled = false;
     btn.textContent = 'Entrar no Painel';
@@ -1222,6 +1246,7 @@ async function doLogin() {
     return;
   }
 
+  console.log('[admin doLogin] Login admin confirmado');
   state.session = data.session;
   state.userId = data.session.user.id;
   btn.disabled = false;
