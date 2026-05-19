@@ -1615,6 +1615,137 @@ body {
 }
 
 /* ============================================================
+   LESSON VIEW (full-screen, replaces modal)
+============================================================ */
+#page-lesson {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.lesson-view-topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.btn-back-modules {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  background: rgba(124,58,237,0.12);
+  border: 1px solid rgba(124,58,237,0.3);
+  border-radius: 8px;
+  color: var(--purple2);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn-back-modules:hover {
+  background: rgba(124,58,237,0.22);
+  border-color: var(--purple);
+  transform: translateX(-1px);
+}
+
+.lesson-breadcrumb {
+  font-size: 13px;
+  color: var(--text3);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.lesson-breadcrumb-module {
+  color: var(--purple2);
+  font-weight: 600;
+}
+
+.lesson-breadcrumb-sep {
+  color: var(--text3);
+  font-size: 12px;
+}
+
+.lesson-breadcrumb-lesson {
+  color: var(--text2);
+}
+
+.lesson-view-title {
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, var(--text), var(--purple2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.lesson-view-body {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  margin-bottom: 24px;
+}
+
+/* Bottom navigation */
+.lesson-nav-bottom {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 16px;
+  margin-top: 8px;
+  padding-bottom: 32px;
+}
+
+.lesson-nav-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 12px 24px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 160px;
+  text-align: center;
+}
+
+.lesson-nav-btn:hover {
+  border-color: var(--purple);
+  background: rgba(124,58,237,0.08);
+}
+
+.lesson-nav-btn:disabled,
+.lesson-nav-btn.hidden-nav {
+  display: none;
+}
+
+.lesson-nav-btn-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--purple2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.lesson-nav-btn-title {
+  font-size: 12px;
+  color: var(--text2);
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ============================================================
    UTILITY
 ============================================================ */
 .hidden { display: none !important; }
@@ -1832,12 +1963,76 @@ body {
         <div class="achievements-grid" id="achievements-grid"></div>
       </div>
 
+      <!-- LESSON VIEW PAGE -->
+      <div class="page" id="page-lesson">
+        <!-- Top bar: back button + breadcrumb -->
+        <div class="lesson-view-topbar">
+          <button class="btn-back-modules" onclick="navigate('modules')">← Voltar para Módulos</button>
+          <div class="lesson-breadcrumb">
+            <span class="lesson-breadcrumb-module" id="lv-module-name">Módulo</span>
+            <span class="lesson-breadcrumb-sep">›</span>
+            <span class="lesson-breadcrumb-lesson" id="lv-lesson-label">Aula</span>
+          </div>
+        </div>
+
+        <!-- Lesson title -->
+        <div class="lesson-view-title" id="lv-title">Título da Aula</div>
+
+        <!-- Lesson body -->
+        <div class="lesson-view-body">
+          <!-- Rich content -->
+          <div id="lv-content-area" class="lesson-content-area" style="display:none;"></div>
+
+          <!-- Search tip -->
+          <div class="search-tip-box" id="lv-tip-box" style="display:none;">
+            <div class="search-tip-icon">🔍</div>
+            <div class="search-tip-content">
+              <div class="search-tip-label">O que pesquisar no YouTube:</div>
+              <div class="search-tip-text" id="lv-tip"></div>
+            </div>
+          </div>
+
+          <!-- Complete button -->
+          <button class="btn-complete not-done" id="lv-complete-btn" onclick="toggleLessonComplete()">
+            ✅ Marcar como Concluída — +15 XP
+          </button>
+
+          <!-- Videos -->
+          <div class="modal-section-title">🎬 Meus Vídeos Salvos</div>
+          <div class="video-add-row">
+            <input type="text" class="video-input" id="lv-video-url-input" placeholder="Cole a URL do YouTube aqui...">
+            <button class="btn-save-video" onclick="saveVideo()">Salvar</button>
+          </div>
+          <div class="video-list" id="lv-video-list"></div>
+
+          <!-- Notes -->
+          <div class="modal-section-title">📝 Minhas Notas</div>
+          <textarea class="notes-textarea" id="lv-notes-textarea" placeholder="Escreva suas anotações aqui..."></textarea>
+          <div class="notes-footer">
+            <span class="notes-updated" id="lv-notes-updated"></span>
+            <button class="btn-save-note" onclick="saveNote()">Salvar Nota</button>
+          </div>
+        </div>
+
+        <!-- Bottom navigation -->
+        <div class="lesson-nav-bottom">
+          <button class="lesson-nav-btn" id="lv-btn-prev" onclick="navigateToPrevLesson()">
+            <span class="lesson-nav-btn-label">← Anterior</span>
+            <span class="lesson-nav-btn-title" id="lv-prev-title"></span>
+          </button>
+          <button class="lesson-nav-btn" id="lv-btn-next" onclick="navigateToNextLesson()">
+            <span class="lesson-nav-btn-label">Próxima →</span>
+            <span class="lesson-nav-btn-title" id="lv-next-title"></span>
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
 
-<!-- LESSON MODAL -->
-<div class="modal-overlay" id="lesson-modal-overlay" onclick="closeLessonModal(event)">
+<!-- LESSON MODAL (desativado — substituído pela view de aula em tela cheia) -->
+<div class="modal-overlay" id="lesson-modal-overlay" onclick="closeLessonModal(event)" style="display:none!important;">
   <div class="modal" id="lesson-modal">
     <div class="modal-header">
       <div class="modal-module-badge" id="lesson-modal-badge">Módulo</div>
@@ -2269,12 +2464,16 @@ function navigate(page) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
-  document.querySelector(`.nav-item[onclick="navigate('${page}')"]`).classList.add('active');
+
+  // lesson view has no sidebar nav item — keep previous sidebar highlight
+  const navEl = document.querySelector(`.nav-item[onclick="navigate('${page}')"]`);
+  if (navEl) navEl.classList.add('active');
 
   if (page === 'dashboard')    renderDashboard();
   if (page === 'modules')      renderModules();
   if (page === 'missions')     renderMissions();
   if (page === 'achievements') renderAchievements();
+  // 'lesson' is rendered by openLesson()
 }
 
 // ============================================================
@@ -2580,7 +2779,7 @@ function renderAchievements() {
 }
 
 // ============================================================
-// LESSON MODAL
+// LESSON VIEW (substitui o modal)
 // ============================================================
 function openLesson(lessonId) {
   const lesson = state.lessons.find(l => l.id === lessonId);
@@ -2589,59 +2788,100 @@ function openLesson(lessonId) {
 
   state.currentLesson = lessonId;
 
-  const badge = document.getElementById('lesson-modal-badge');
-  badge.textContent = mod ? mod.title : 'Módulo';
-  badge.style.background = mod ? mod.color + '22' : '#7c3aed22';
-  badge.style.color = mod ? mod.color : '#9d5cf5';
+  // Calcular posição global da aula (todas as aulas de todos os módulos em ordem)
+  const allLessons = state.lessons; // já ordenado por order_index
+  const currentIdx = allLessons.findIndex(l => l.id === lessonId);
+  const prevLesson = currentIdx > 0 ? allLessons[currentIdx - 1] : null;
+  const nextLesson = currentIdx < allLessons.length - 1 ? allLessons[currentIdx + 1] : null;
 
-  document.getElementById('lesson-modal-title').textContent = lesson.title;
-  document.getElementById('lesson-modal-tip').textContent = lesson.search_tip || '';
+  // Breadcrumb
+  const moduleName = mod ? mod.title : 'Módulo';
+  const lessonNumber = currentIdx + 1;
+  document.getElementById('lv-module-name').textContent = moduleName;
+  document.getElementById('lv-lesson-label').textContent = `Aula ${lessonNumber}`;
 
-  // Show/hide tip box
-  const tipBox = document.getElementById('lesson-tip-box');
-  tipBox.style.display = lesson.search_tip ? 'flex' : 'none';
+  // Título
+  document.getElementById('lv-title').textContent = lesson.title;
 
-  // Lesson content
-  const contentArea = document.getElementById('lesson-content-area');
+  // Dica de pesquisa
+  const tipBox = document.getElementById('lv-tip-box');
+  const tipText = document.getElementById('lv-tip');
+  if (lesson.search_tip) {
+    tipText.textContent = lesson.search_tip;
+    tipBox.style.display = 'flex';
+  } else {
+    tipBox.style.display = 'none';
+  }
+
+  // Conteúdo rico
+  const contentArea = document.getElementById('lv-content-area');
   if (lesson.content && lesson.content.trim()) {
     contentArea.innerHTML = lesson.content;
     contentArea.style.display = 'block';
   } else {
     contentArea.innerHTML = '';
     contentArea.style.display = 'none';
-    // fallback to description
-    if (lesson.description) {
-      const descEl = document.getElementById('lesson-modal-desc') || (() => {
-        const d = document.createElement('div');
-        d.id = 'lesson-modal-desc';
-        d.className = 'modal-desc';
-        contentArea.parentNode.insertBefore(d, contentArea);
-        return d;
-      })();
-    }
   }
 
+  // Botão de conclusão
   updateCompleteBtnState();
-  renderVideoList();
 
+  // Vídeos e notas
+  renderVideoList();
   const note = state.notes[lessonId];
-  document.getElementById('notes-textarea').value = note ? note.content : '';
-  document.getElementById('notes-updated').textContent = note
+  document.getElementById('lv-notes-textarea').value = note ? note.content : '';
+  document.getElementById('lv-notes-updated').textContent = note
     ? `Última atualização: ${formatDate(note.updated_at)}`
     : '';
-  document.getElementById('video-url-input').value = '';
+  document.getElementById('lv-video-url-input').value = '';
 
-  document.getElementById('lesson-modal-overlay').classList.add('open');
+  // Navegação inferior
+  const btnPrev = document.getElementById('lv-btn-prev');
+  const btnNext = document.getElementById('lv-btn-next');
+
+  if (prevLesson) {
+    document.getElementById('lv-prev-title').textContent = prevLesson.title;
+    btnPrev.style.display = 'flex';
+  } else {
+    btnPrev.style.display = 'none';
+  }
+
+  if (nextLesson) {
+    document.getElementById('lv-next-title').textContent = nextLesson.title;
+    btnNext.style.display = 'flex';
+  } else {
+    btnNext.style.display = 'none';
+  }
+
+  // Navegar para a view de aula
+  navigate('lesson');
+
+  // Rolar para o topo
+  document.getElementById('content').scrollTop = 0;
+  window.scrollTo(0, 0);
+}
+
+function navigateToPrevLesson() {
+  const allLessons = state.lessons;
+  const currentIdx = allLessons.findIndex(l => l.id === state.currentLesson);
+  if (currentIdx > 0) openLesson(allLessons[currentIdx - 1].id);
+}
+
+function navigateToNextLesson() {
+  const allLessons = state.lessons;
+  const currentIdx = allLessons.findIndex(l => l.id === state.currentLesson);
+  if (currentIdx < allLessons.length - 1) openLesson(allLessons[currentIdx + 1].id);
 }
 
 function closeLessonModal(event, force = false) {
+  // mantido por compatibilidade (modal foi desativado)
   if (!force && event && event.target !== event.currentTarget) return;
-  document.getElementById('lesson-modal-overlay').classList.remove('open');
   state.currentLesson = null;
 }
 
 function updateCompleteBtnState() {
-  const btn = document.getElementById('lesson-complete-btn');
+  const btn = document.getElementById('lv-complete-btn');
+  if (!btn) return;
   const isDone = state.progress[state.currentLesson]?.completed;
   if (isDone) {
     btn.className = 'btn-complete done';
@@ -2683,6 +2923,7 @@ async function toggleLessonComplete() {
   renderHeader();
   if (state.currentPage === 'modules') renderModules();
   if (state.currentPage === 'dashboard') renderDashboard();
+  // lesson view stays open — no re-render needed beyond button state above
 }
 
 // ============================================================
@@ -2701,7 +2942,7 @@ function extractYouTubeId(url) {
 }
 
 async function saveVideo() {
-  const url = document.getElementById('video-url-input').value.trim();
+  const url = document.getElementById('lv-video-url-input').value.trim();
   if (!url) { showToast('Cole uma URL do YouTube', 'warning'); return; }
   const videoId = extractYouTubeId(url);
   if (!videoId) { showToast('URL do YouTube inválida', 'error'); return; }
@@ -2720,7 +2961,7 @@ async function saveVideo() {
 
   if (!state.videos[lessonId]) state.videos[lessonId] = [];
   state.videos[lessonId].unshift(data);
-  document.getElementById('video-url-input').value = '';
+  document.getElementById('lv-video-url-input').value = '';
   renderVideoList();
   showToast('🎬 Vídeo salvo!', 'success');
 }
@@ -2728,7 +2969,7 @@ async function saveVideo() {
 function renderVideoList() {
   const lessonId = state.currentLesson;
   const videos = state.videos[lessonId] || [];
-  const list = document.getElementById('video-list');
+  const list = document.getElementById('lv-video-list');
 
   if (videos.length === 0) {
     list.innerHTML = `<div class="empty-state" style="padding:16px;"><div style="font-size:24px;margin-bottom:6px;">🎬</div>Nenhum vídeo salvo ainda</div>`;
@@ -2773,7 +3014,7 @@ async function deleteVideo(videoId) {
 // ============================================================
 async function saveNote() {
   const lessonId = state.currentLesson;
-  const content = document.getElementById('notes-textarea').value;
+  const content = document.getElementById('lv-notes-textarea').value;
   const now = new Date().toISOString();
   const uid = state.userId;
 
@@ -2795,11 +3036,11 @@ async function saveNote() {
     state.notes[lessonId] = data;
   }
 
-  document.getElementById('notes-updated').textContent = `Última atualização: ${formatDate(now)}`;
+  document.getElementById('lv-notes-updated').textContent = `Última atualização: ${formatDate(now)}`;
   showToast('📝 Nota salva!', 'success');
 }
 
-document.getElementById('notes-textarea').addEventListener('blur', () => {
+document.getElementById('lv-notes-textarea').addEventListener('blur', () => {
   if (state.currentLesson) saveNote();
 });
 
