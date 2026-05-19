@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VORTEX — Quem domina o Prompt, domina o mundo</title>
+<title>VORTEX: Quem domina o Prompt, domina o mundo</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -1945,7 +1945,7 @@ body {
       <!-- MODULES PAGE -->
       <div class="page" id="page-modules">
         <div class="page-title">📚 Módulos de Estudo</div>
-        <div class="page-subtitle">Domine cada módulo para desbloquear o próximo. Como as ilhas do Grand Line — cada uma mais poderosa.</div>
+        <div class="page-subtitle">Domine cada módulo para desbloquear o próximo. Como as ilhas do Grand Line, cada uma mais poderosa.</div>
         <div class="modules-grid" id="modules-grid"></div>
       </div>
 
@@ -1994,7 +1994,7 @@ body {
 
           <!-- Complete button -->
           <button class="btn-complete not-done" id="lv-complete-btn" onclick="toggleLessonComplete()">
-            ✅ Marcar como Concluída — +15 XP
+            ✅ Marcar como Concluída (+15 XP)
           </button>
 
           <!-- Videos -->
@@ -2053,7 +2053,7 @@ body {
       </div>
 
       <button class="btn-complete not-done" id="lesson-complete-btn" onclick="toggleLessonComplete()">
-        ✅ Marcar como Concluída — +15 XP
+        ✅ Marcar como Concluída (+15 XP)
       </button>
 
       <!-- Videos -->
@@ -2082,7 +2082,7 @@ body {
     <div class="mission-name-badge" id="submit-mission-name">Nome da Missão</div>
     <div class="submit-field">
       <label class="submit-label">Descreva o que você fez *</label>
-      <textarea class="submit-textarea" id="submit-notes" placeholder="Explique o que você criou, as ferramentas que usou e o que aprendeu..."></textarea>
+      <textarea class="submit-textarea" id="submit-notes" placeholder="Explique o que você criou, quais ferramentas usou (Google Antigravity, Claude, GPT) e o que aprendeu..."></textarea>
     </div>
     <div class="submit-field">
       <label class="submit-label">Link do projeto *</label>
@@ -2505,7 +2505,7 @@ function renderDashboard() {
   const messages = [
     `A jornada para dominar a IA é como encontrar as frutas do diabo certas no Grand Line. Cada módulo que você completa é um poder novo desbloqueado. Vamos nessa?`,
     `Os Vingadores não viraram heróis da noite pro dia. Cada aula completada é um treino no Compound dos Avengers. Continue!`,
-    `No Blox Fruits, os melhores players são os que mais farmaram. Aqui é igual — cada aula é XP real. Você está no caminho certo.`,
+    `No Blox Fruits, os melhores players são os que mais farmaram. Aqui é igual: cada aula é XP real. Você está no caminho certo.`,
     `Quem sabe fazer o pedido certo para a IA tem o poder do usuário do Ope Ope no Mi. Você está aprendendo a usar o poder mais raro do mundo.`,
   ];
   document.getElementById('welcome-sub').textContent = messages[Math.floor(Date.now() / 60000) % messages.length];
@@ -2711,7 +2711,7 @@ function renderMissions() {
       `;
     } else if (status === 'pending') {
       footerHTML = `
-        <span class="status-badge pending">🕐 Em Análise — aguardando aprovação</span>
+        <span class="status-badge pending">🕐 Em Análise, aguardando aprovação</span>
         <span class="text-xs text-muted">Enviado em ${formatDate(completion.created_at || completion.completed_at)}</span>
       `;
     } else if (status === 'approved') {
@@ -2888,7 +2888,7 @@ function updateCompleteBtnState() {
     btn.textContent = '✅ Aula Concluída!';
   } else {
     btn.className = 'btn-complete not-done';
-    btn.textContent = '✅ Marcar como Concluída — +15 XP';
+    btn.textContent = '✅ Marcar como Concluída (+15 XP)';
   }
 }
 
@@ -2949,7 +2949,7 @@ async function saveVideo() {
 
   const lessonId = state.currentLesson;
   const uid = state.userId;
-  const title = `Vídeo — ${videoId}`;
+  const title = `Vídeo: ${videoId}`;
 
   const { data, error } = await db
     .from('videos')
@@ -3134,7 +3134,7 @@ async function checkAchievements() {
       if (!error) {
         state.unlockedAchievements.add(ach.id);
         state.unlockedAchievementDates[ach.id] = now;
-        showToast(`🏆 Conquista desbloqueada: ${ach.icon} ${ach.name} — +${ach.sparks_bonus}⚡`, 'warning');
+        showToast(`🏆 Conquista desbloqueada: ${ach.icon} ${ach.name} (+${ach.sparks_bonus}⚡)`, 'warning');
       }
     }
   }
