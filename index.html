@@ -2609,28 +2609,18 @@ async function toggleLessonComplete() {
   if (isDone) {
     const { error } = await db
       .from('progress')
-      .update({ completed: false, completed_at: null })
-      .eq('lesson_id', lessonId)
-      .eq('user_id', uid);
+      .upsert({ lesson_id: lessonId, user_id: uid, completed: false, completed_at: null },
+               { onConflict: 'user_id,lesson_id' });
     if (error) { showToast('Erro ao atualizar progresso', 'error'); return; }
     state.progress[lessonId] = { ...state.progress[lessonId], completed: false, completed_at: null };
     showToast('Aula desmarcada', 'info');
   } else {
     const now = new Date().toISOString();
-    const existing = state.progress[lessonId];
-    if (existing) {
-      const { error } = await db
-        .from('progress')
-        .update({ completed: true, completed_at: now })
-        .eq('lesson_id', lessonId)
-        .eq('user_id', uid);
-      if (error) { showToast('Erro ao salvar progresso', 'error'); return; }
-    } else {
-      const { error } = await db
-        .from('progress')
-        .insert({ lesson_id: lessonId, user_id: uid, completed: true, completed_at: now });
-      if (error) { showToast('Erro ao salvar progresso', 'error'); return; }
-    }
+    const { error } = await db
+      .from('progress')
+      .upsert({ lesson_id: lessonId, user_id: uid, completed: true, completed_at: now },
+               { onConflict: 'user_id,lesson_id' });
+    if (error) { showToast('Erro ao salvar progresso', 'error'); return; }
     state.progress[lessonId] = { lesson_id: lessonId, user_id: uid, completed: true, completed_at: now };
     showToast('⚡ Aula concluída! +15 XP', 'success');
     animateXP();
