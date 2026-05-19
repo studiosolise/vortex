@@ -1946,8 +1946,8 @@ async function initAuth() {
     return;
   }
 
-  // Check role
-  const { data: profile, error: profileError } = await db
+  // Check role — cria perfil automaticamente se não existir (primeiro login via sessão salva)
+  let { data: profile, error: profileError } = await db
     .from('profiles')
     .select('role, display_name')
     .eq('id', session.user.id)
@@ -1956,15 +1956,40 @@ async function initAuth() {
   console.log('[initAuth] profile result:', profile, 'error:', profileError);
 
   if (profileError) {
-    console.error('[initAuth] Erro ao carregar perfil:', profileError);
-    showLoginScreen();
-    const errEl = document.getElementById('login-error');
-    if (errEl) {
-      errEl.textContent = 'Erro ao carregar perfil. Tente novamente.';
-      errEl.classList.add('visible');
+    // PGRST116 = nenhuma linha encontrada → criar perfil padrão como 'student'
+    if (profileError.code === 'PGRST116') {
+      console.log('[initAuth] Perfil não encontrado, criando como student...');
+      const displayName = session.user.email.split('@')[0];
+      const { data: newProfile, error: insertError } = await db
+        .from('profiles')
+        .insert({ id: session.user.id, role: 'student', display_name: displayName })
+        .select('role, display_name')
+        .single();
+
+      if (insertError) {
+        console.error('[initAuth] Erro ao criar perfil:', insertError);
+        showLoginScreen();
+        const errEl = document.getElementById('login-error');
+        if (errEl) {
+          errEl.textContent = 'Erro ao criar perfil. Tente novamente.';
+          errEl.classList.add('visible');
+        }
+        await db.auth.signOut();
+        return;
+      }
+      profile = newProfile;
+      profileError = null;
+    } else {
+      console.error('[initAuth] Erro ao carregar perfil:', profileError);
+      showLoginScreen();
+      const errEl = document.getElementById('login-error');
+      if (errEl) {
+        errEl.textContent = 'Erro ao carregar perfil. Tente novamente.';
+        errEl.classList.add('visible');
+      }
+      await db.auth.signOut();
+      return;
     }
-    await db.auth.signOut();
-    return;
   }
 
   if (profile && profile.role === 'admin') {
@@ -2017,8 +2042,8 @@ async function doLogin() {
     return;
   }
 
-  // Check role
-  const { data: profile, error: profileError } = await db
+  // Check role — cria perfil automaticamente se não existir (primeiro login)
+  let { data: profile, error: profileError } = await db
     .from('profiles')
     .select('role')
     .eq('id', data.session.user.id)
@@ -2027,13 +2052,36 @@ async function doLogin() {
   console.log('[doLogin] profile result:', profile, 'error:', profileError);
 
   if (profileError) {
-    console.error('[doLogin] Erro ao carregar perfil:', profileError);
-    btn.disabled = false;
-    btn.textContent = 'Entrar no VORTEX';
-    errEl.textContent = 'Erro ao carregar perfil. Tente novamente.';
-    errEl.classList.add('visible');
-    await db.auth.signOut();
-    return;
+    // PGRST116 = nenhuma linha encontrada → criar perfil padrão como 'student'
+    if (profileError.code === 'PGRST116') {
+      console.log('[doLogin] Perfil não encontrado, criando como student...');
+      const displayName = data.session.user.email.split('@')[0];
+      const { data: newProfile, error: insertError } = await db
+        .from('profiles')
+        .insert({ id: data.session.user.id, role: 'student', display_name: displayName })
+        .select('role')
+        .single();
+
+      if (insertError) {
+        console.error('[doLogin] Erro ao criar perfil:', insertError);
+        btn.disabled = false;
+        btn.textContent = 'Entrar no VORTEX';
+        errEl.textContent = 'Erro ao criar perfil. Tente novamente.';
+        errEl.classList.add('visible');
+        await db.auth.signOut();
+        return;
+      }
+      profile = newProfile;
+      profileError = null;
+    } else {
+      console.error('[doLogin] Erro ao carregar perfil:', profileError);
+      btn.disabled = false;
+      btn.textContent = 'Entrar no VORTEX';
+      errEl.textContent = 'Erro ao carregar perfil. Tente novamente.';
+      errEl.classList.add('visible');
+      await db.auth.signOut();
+      return;
+    }
   }
 
   if (profile && profile.role === 'admin') {
