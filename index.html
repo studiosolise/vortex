@@ -1968,10 +1968,11 @@ async function initAuth() {
 
       if (insertError) {
         console.error('[initAuth] Erro ao criar perfil:', insertError);
+        console.error('[initAuth] insert code:', insertError?.code, '| message:', insertError?.message, '| details:', insertError?.details);
         showLoginScreen();
         const errEl = document.getElementById('login-error');
         if (errEl) {
-          errEl.textContent = 'Erro ao criar perfil. Tente novamente.';
+          errEl.textContent = `Erro ao criar perfil. Tente novamente. (${insertError?.code || insertError?.message || 'desconhecido'})`;
           errEl.classList.add('visible');
         }
         await db.auth.signOut();
@@ -1981,10 +1982,11 @@ async function initAuth() {
       profileError = null;
     } else {
       console.error('[initAuth] Erro ao carregar perfil:', profileError);
+      console.error('[initAuth] code:', profileError?.code, '| message:', profileError?.message, '| details:', profileError?.details, '| hint:', profileError?.hint);
       showLoginScreen();
       const errEl = document.getElementById('login-error');
       if (errEl) {
-        errEl.textContent = 'Erro ao carregar perfil. Tente novamente.';
+        errEl.textContent = `Erro ao carregar perfil. Tente novamente. (${profileError?.code || profileError?.message || 'desconhecido'})`;
         errEl.classList.add('visible');
       }
       await db.auth.signOut();
@@ -2064,9 +2066,10 @@ async function doLogin() {
 
       if (insertError) {
         console.error('[doLogin] Erro ao criar perfil:', insertError);
+        console.error('[doLogin] insert code:', insertError?.code, '| message:', insertError?.message, '| details:', insertError?.details);
         btn.disabled = false;
         btn.textContent = 'Entrar no VORTEX';
-        errEl.textContent = 'Erro ao criar perfil. Tente novamente.';
+        errEl.textContent = `Erro ao criar perfil. Tente novamente. (${insertError?.code || insertError?.message || 'desconhecido'})`;
         errEl.classList.add('visible');
         await db.auth.signOut();
         return;
@@ -2075,9 +2078,10 @@ async function doLogin() {
       profileError = null;
     } else {
       console.error('[doLogin] Erro ao carregar perfil:', profileError);
+      console.error('[doLogin] code:', profileError?.code, '| message:', profileError?.message, '| details:', profileError?.details, '| hint:', profileError?.hint);
       btn.disabled = false;
       btn.textContent = 'Entrar no VORTEX';
-      errEl.textContent = 'Erro ao carregar perfil. Tente novamente.';
+      errEl.textContent = `Erro ao carregar perfil. Tente novamente. (${profileError?.code || profileError?.message || 'desconhecido'})`;
       errEl.classList.add('visible');
       await db.auth.signOut();
       return;
