@@ -29,6 +29,7 @@
   --amber2:    #fbbf24;
   --green:     #10b981;
   --red:       #ef4444;
+  --yellow:    #eab308;
   --text:      #e2e8f0;
   --text2:     #94a3b8;
   --text3:     #64748b;
@@ -45,19 +46,191 @@ body {
   overflow-x: hidden;
 }
 
-/* Scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg2); }
 ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--purple); }
 
 /* ============================================================
-   LAYOUT
+   LOGIN SCREEN
+============================================================ */
+#login-screen {
+  display: none;
+  min-height: 100vh;
+  background: var(--bg);
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+#login-screen.active { display: flex; }
+
+#login-screen::before {
+  content: '';
+  position: absolute;
+  top: -200px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(124,58,237,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+#login-screen::after {
+  content: '';
+  position: absolute;
+  bottom: -100px;
+  right: -100px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(6,182,212,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.login-box {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 24px;
+  padding: 48px 40px;
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 0 80px rgba(124,58,237,0.15);
+}
+
+.login-logo {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.login-logo-text {
+  font-size: 42px;
+  font-weight: 900;
+  letter-spacing: 8px;
+  background: linear-gradient(135deg, var(--purple2), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 20px rgba(124,58,237,0.5));
+}
+
+.login-logo-sub {
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.login-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border2), transparent);
+  margin: 28px 0;
+}
+
+.login-welcome {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.login-hint {
+  font-size: 12px;
+  color: var(--text3);
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.login-field {
+  margin-bottom: 16px;
+}
+
+.login-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text2);
+  margin-bottom: 8px;
+}
+
+.login-input {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.login-input:focus {
+  border-color: var(--purple);
+  box-shadow: 0 0 0 3px rgba(124,58,237,0.15);
+}
+
+.login-input::placeholder { color: var(--text3); }
+
+.btn-login {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--purple), var(--purple2));
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 8px;
+  box-shadow: 0 4px 20px rgba(124,58,237,0.35);
+  letter-spacing: 0.5px;
+}
+
+.btn-login:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 28px rgba(124,58,237,0.5);
+}
+
+.btn-login:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.login-error {
+  display: none;
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.3);
+  border-radius: 8px;
+  color: var(--red);
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.login-error.visible { display: block; }
+
+/* ============================================================
+   APP LAYOUT
 ============================================================ */
 #app {
-  display: flex;
+  display: none;
   min-height: 100vh;
 }
+
+#app.active { display: flex; }
 
 /* ============================================================
    SIDEBAR
@@ -90,7 +263,6 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-shadow: none;
   filter: drop-shadow(0 0 12px rgba(124,58,237,0.6));
 }
 
@@ -194,22 +366,9 @@ body {
   z-index: 90;
 }
 
-.header-greeting {
-  flex: 1;
-}
-
-.header-name {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--text);
-}
-
-.header-level {
-  font-size: 11px;
-  color: var(--purple2);
-  font-weight: 500;
-  margin-top: 1px;
-}
+.header-greeting { flex: 1; }
+.header-name { font-size: 15px; font-weight: 700; color: var(--text); }
+.header-level { font-size: 11px; color: var(--purple2); font-weight: 500; margin-top: 1px; }
 
 .header-xp-section {
   display: flex;
@@ -230,7 +389,6 @@ body {
   background: var(--border);
   border-radius: 3px;
   overflow: hidden;
-  position: relative;
 }
 
 .header-xp-fill {
@@ -256,6 +414,7 @@ body {
 .header-stats {
   display: flex;
   gap: 16px;
+  align-items: center;
 }
 
 .header-stat {
@@ -269,14 +428,30 @@ body {
 }
 
 .header-stat-icon { font-size: 14px; }
-
-.header-stat-val {
-  font-size: 14px;
-  font-weight: 700;
-}
-
+.header-stat-val { font-size: 14px; font-weight: 700; }
 .header-stat-val.sparks { color: var(--amber); }
 .header-stat-val.money  { color: var(--green); }
+
+.btn-logout {
+  padding: 6px 14px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text3);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.btn-logout:hover {
+  border-color: var(--red);
+  color: var(--red);
+  background: rgba(239,68,68,0.08);
+}
 
 /* ============================================================
    PAGE CONTENT
@@ -530,10 +705,7 @@ body {
   align-items: center;
 }
 
-.module-card-progress {
-  font-size: 11px;
-  color: var(--text2);
-}
+.module-card-progress { font-size: 11px; color: var(--text2); }
 
 .module-card-bar {
   width: 80px;
@@ -556,7 +728,6 @@ body {
   line-height: 1.5;
 }
 
-/* Lesson list inside module */
 .lesson-list {
   display: none;
   border-top: 1px solid var(--border);
@@ -598,22 +769,9 @@ body {
   box-shadow: 0 0 8px rgba(16,185,129,0.4);
 }
 
-.lesson-item-title {
-  flex: 1;
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.lesson-item-title.done {
-  color: var(--text2);
-  text-decoration: line-through;
-}
-
-.lesson-xp {
-  font-size: 10px;
-  color: var(--amber);
-  font-weight: 600;
-}
+.lesson-item-title { flex: 1; font-size: 13px; font-weight: 500; }
+.lesson-item-title.done { color: var(--text2); text-decoration: line-through; }
+.lesson-xp { font-size: 10px; color: var(--amber); font-weight: 600; }
 
 .btn-open-lesson {
   padding: 4px 10px;
@@ -660,7 +818,7 @@ body {
   border: 1px solid var(--border2);
   border-radius: 20px;
   width: 100%;
-  max-width: 720px;
+  max-width: 760px;
   max-height: 90vh;
   overflow-y: auto;
   transform: translateY(20px);
@@ -715,6 +873,26 @@ body {
 
 .modal-body { padding: 24px 28px; }
 
+/* Lesson content area */
+.lesson-content-area {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 20px;
+  line-height: 1.75;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.lesson-content-area p { margin-bottom: 12px; }
+.lesson-content-area p:last-child { margin-bottom: 0; }
+.lesson-content-area strong { color: var(--cyan2); font-weight: 700; }
+.lesson-content-area em { color: var(--amber2); font-style: italic; }
+.lesson-content-area ul { padding-left: 20px; margin-bottom: 12px; }
+.lesson-content-area li { margin-bottom: 6px; color: var(--text2); }
+.lesson-content-area li strong { color: var(--purple2); }
+
 .modal-desc {
   font-size: 14px;
   color: var(--text2);
@@ -734,8 +912,6 @@ body {
 }
 
 .search-tip-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
-
-.search-tip-content {}
 .search-tip-label {
   font-size: 10px;
   font-weight: 700;
@@ -744,12 +920,7 @@ body {
   color: var(--cyan);
   margin-bottom: 4px;
 }
-
-.search-tip-text {
-  font-size: 13px;
-  color: var(--text);
-  font-style: italic;
-}
+.search-tip-text { font-size: 13px; color: var(--text); font-style: italic; }
 
 .btn-complete {
   width: 100%;
@@ -792,11 +963,7 @@ body {
 }
 
 /* Videos section */
-.video-add-row {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
-}
+.video-add-row { display: flex; gap: 8px; margin-bottom: 16px; }
 
 .video-input {
   flex: 1;
@@ -858,12 +1025,7 @@ body {
   background: var(--border);
 }
 
-.video-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
+.video-thumb img { width: 100%; height: 100%; object-fit: cover; }
 .video-title { flex: 1; font-size: 12px; font-weight: 500; }
 
 .btn-del-video {
@@ -952,10 +1114,10 @@ body {
 
 .mission-card:hover { border-color: var(--border2); }
 
-.mission-card.completed-mission {
-  border-color: var(--amber);
-  box-shadow: 0 0 20px rgba(245,158,11,0.12);
-}
+/* Status borders */
+.mission-card.status-pending   { border-color: rgba(234,179,8,0.4); box-shadow: 0 0 20px rgba(234,179,8,0.08); }
+.mission-card.status-approved  { border-color: rgba(16,185,129,0.4); box-shadow: 0 0 20px rgba(16,185,129,0.12); }
+.mission-card.status-rejected  { border-color: rgba(239,68,68,0.4); box-shadow: 0 0 20px rgba(239,68,68,0.08); }
 
 .mission-header {
   padding: 20px 24px;
@@ -1011,9 +1173,8 @@ body {
 .reward-brl    { color: var(--green); }
 
 .mission-requirements {
-  padding: 0 24px 16px;
+  padding: 16px 24px;
   border-top: 1px solid var(--border);
-  padding-top: 16px;
 }
 
 .req-title {
@@ -1054,16 +1215,55 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
-.completed-badge {
-  display: flex;
+/* Status badges */
+.status-badge {
+  display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: var(--amber);
+  padding: 5px 12px;
+  border-radius: 8px;
   font-size: 12px;
   font-weight: 700;
 }
+
+.status-badge.pending  { background: rgba(234,179,8,0.12); color: var(--yellow); border: 1px solid rgba(234,179,8,0.3); }
+.status-badge.approved { background: rgba(16,185,129,0.12); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
+.status-badge.rejected { background: rgba(239,68,68,0.12); color: var(--red); border: 1px solid rgba(239,68,68,0.3); }
+
+.feedback-box {
+  margin: 0 24px 16px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.feedback-box.approved {
+  background: rgba(16,185,129,0.08);
+  border: 1px solid rgba(16,185,129,0.2);
+  color: var(--text2);
+}
+
+.feedback-box.rejected {
+  background: rgba(239,68,68,0.08);
+  border: 1px solid rgba(239,68,68,0.25);
+  color: var(--text2);
+}
+
+.feedback-box strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.feedback-box.approved strong { color: var(--green); }
+.feedback-box.rejected strong { color: var(--red); }
 
 .btn-deliver {
   padding: 8px 20px;
@@ -1083,21 +1283,64 @@ body {
   box-shadow: 0 6px 18px rgba(124,58,237,0.45);
 }
 
-/* Delivery modal */
-.delivery-modal {
+.btn-resubmit {
+  padding: 8px 20px;
+  background: rgba(239,68,68,0.12);
+  border: 1px solid rgba(239,68,68,0.3);
+  border-radius: 8px;
+  color: var(--red);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-resubmit:hover {
+  background: rgba(239,68,68,0.2);
+  transform: translateY(-1px);
+}
+
+/* Submit mission modal */
+.submit-modal {
   background: var(--bg2);
   border: 1px solid var(--border2);
-  border-radius: 16px;
-  padding: 28px;
+  border-radius: 20px;
+  padding: 32px;
   width: 100%;
-  max-width: 480px;
+  max-width: 500px;
   box-shadow: 0 0 60px rgba(124,58,237,0.2);
 }
 
-.delivery-modal h3 { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
-.delivery-modal p  { font-size: 13px; color: var(--text2); margin-bottom: 20px; }
+.submit-modal h3 {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
 
-.delivery-textarea {
+.submit-modal .mission-name-badge {
+  font-size: 12px;
+  color: var(--text2);
+  margin-bottom: 24px;
+  padding: 6px 12px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: inline-block;
+}
+
+.submit-field { margin-bottom: 16px; }
+
+.submit-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text2);
+  margin-bottom: 8px;
+}
+
+.submit-textarea {
   width: 100%;
   height: 100px;
   padding: 12px;
@@ -1110,15 +1353,28 @@ body {
   line-height: 1.5;
   resize: vertical;
   outline: none;
-  margin-bottom: 16px;
+  transition: border-color 0.2s;
 }
 
-.delivery-textarea:focus { border-color: var(--purple); }
+.submit-textarea:focus { border-color: var(--purple); }
 
-.delivery-btns {
-  display: flex;
-  gap: 10px;
+.submit-url-input {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
 }
+
+.submit-url-input:focus { border-color: var(--purple); }
+.submit-url-input::placeholder { color: var(--text3); }
+
+.submit-btns { display: flex; gap: 10px; margin-top: 20px; }
 
 .btn-cancel {
   flex: 1;
@@ -1138,18 +1394,18 @@ body {
 .btn-confirm {
   flex: 1;
   padding: 10px;
-  background: linear-gradient(135deg, var(--amber), #d97706);
+  background: linear-gradient(135deg, var(--purple), var(--purple2));
   border: none;
   border-radius: 8px;
-  color: #1a0a00;
+  color: white;
   font-size: 13px;
   font-weight: 800;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 4px 12px rgba(245,158,11,0.3);
+  box-shadow: 0 4px 12px rgba(124,58,237,0.3);
 }
 
-.btn-confirm:hover { filter: brightness(1.1); }
+.btn-confirm:hover { filter: brightness(1.1); transform: translateY(-1px); }
 
 /* ============================================================
    ACHIEVEMENTS PAGE
@@ -1187,20 +1443,8 @@ body {
 }
 
 .achievement-icon { font-size: 32px; margin-bottom: 10px; }
-
-.achievement-name {
-  font-size: 13px;
-  font-weight: 700;
-  margin-bottom: 5px;
-}
-
-.achievement-desc {
-  font-size: 11px;
-  color: var(--text2);
-  line-height: 1.4;
-  margin-bottom: 10px;
-}
-
+.achievement-name { font-size: 13px; font-weight: 700; margin-bottom: 5px; }
+.achievement-desc { font-size: 11px; color: var(--text2); line-height: 1.4; margin-bottom: 10px; }
 .achievement-bonus {
   display: inline-flex;
   align-items: center;
@@ -1213,11 +1457,7 @@ body {
   border-radius: 6px;
 }
 
-.achievement-date {
-  font-size: 10px;
-  color: var(--text3);
-  margin-top: 6px;
-}
+.achievement-date { font-size: 10px; color: var(--text3); margin-top: 6px; }
 
 .achievement-lock-icon {
   position: absolute;
@@ -1265,11 +1505,7 @@ body {
 .next-lesson-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--cyan); font-weight: 700; margin-bottom: 4px; }
 .next-lesson-title { font-size: 15px; font-weight: 700; }
 .next-lesson-module { font-size: 12px; color: var(--text2); margin-top: 2px; }
-
-.next-lesson-arrow {
-  font-size: 20px;
-  color: var(--purple2);
-}
+.next-lesson-arrow { font-size: 20px; color: var(--purple2); }
 
 /* ============================================================
    LOADING
@@ -1293,7 +1529,6 @@ body {
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
-
 .loading-text { font-size: 13px; color: var(--text3); }
 
 /* ============================================================
@@ -1330,30 +1565,34 @@ body {
 .toast.info    { background: linear-gradient(135deg, var(--purple), var(--purple2)); }
 .toast.warning { background: linear-gradient(135deg, var(--amber), #d97706); color: #1a0a00; }
 
-@keyframes toastIn {
-  from { transform: translateX(100%); opacity: 0; }
-  to   { transform: translateX(0);    opacity: 1; }
-}
-
-@keyframes toastOut {
-  from { transform: translateX(0); opacity: 1; }
-  to   { transform: translateX(100%); opacity: 0; }
-}
-
+@keyframes toastIn  { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes toastOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
 .toast.hiding { animation: toastOut 0.3s ease forwards; }
 
 /* ============================================================
-   SECTION HEADERS (two-column layout)
+   CONFETTI
+============================================================ */
+.confetti-particle {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 9998;
+  animation: confettiFall 2s ease-out forwards;
+}
+
+@keyframes confettiFall {
+  0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+/* ============================================================
+   TWO-COLUMN LAYOUTS
 ============================================================ */
 .two-col {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 24px;
-}
-
-.two-col-wide {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
   gap: 24px;
 }
 
@@ -1380,16 +1619,10 @@ body {
 ============================================================ */
 .hidden { display: none !important; }
 .flex { display: flex; }
-.flex-col { display: flex; flex-direction: column; }
-.gap-2 { gap: 8px; }
-.gap-3 { gap: 12px; }
 .items-center { align-items: center; }
 .justify-between { justify-content: space-between; }
-.mt-1 { margin-top: 4px; }
+.gap-2 { gap: 8px; }
 .mt-2 { margin-top: 8px; }
-.mt-3 { margin-top: 12px; }
-.mb-2 { margin-bottom: 8px; }
-.mb-4 { margin-bottom: 16px; }
 .text-xs { font-size: 11px; }
 .text-sm { font-size: 13px; }
 .text-muted { color: var(--text2); }
@@ -1398,9 +1631,7 @@ body {
 .text-amber  { color: var(--amber); }
 .text-green  { color: var(--green); }
 .font-bold   { font-weight: 700; }
-.font-600    { font-weight: 600; }
 
-/* Recent achievements row */
 .recent-ach-list { display: flex; flex-direction: column; gap: 10px; }
 .recent-ach-item {
   display: flex;
@@ -1421,12 +1652,39 @@ body {
   color: var(--text3);
   font-size: 13px;
 }
-
 .empty-state-icon { font-size: 32px; margin-bottom: 8px; }
 </style>
 </head>
 <body>
 
+<!-- ============================================================
+     LOGIN SCREEN
+============================================================ -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-logo-text">VORTEX</div>
+      <div class="login-logo-sub">Quem domina o Prompt, domina o mundo</div>
+    </div>
+    <div class="login-divider"></div>
+    <div class="login-welcome">Entre no VORTEX</div>
+    <div class="login-hint">Use o email e senha que você recebeu</div>
+    <div class="login-field">
+      <label class="login-label" for="login-email">Email</label>
+      <input type="email" id="login-email" class="login-input" placeholder="seu@email.com" autocomplete="email">
+    </div>
+    <div class="login-field">
+      <label class="login-label" for="login-password">Senha</label>
+      <input type="password" id="login-password" class="login-input" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="btn-login" id="btn-login" onclick="doLogin()">Entrar no VORTEX</button>
+    <div class="login-error" id="login-error">Email ou senha incorretos. Tente novamente.</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     APP
+============================================================ -->
 <div id="app">
   <!-- SIDEBAR -->
   <aside id="sidebar">
@@ -1466,13 +1724,13 @@ body {
     <!-- HEADER -->
     <header id="header">
       <div class="header-greeting">
-        <div class="header-name">⚡ Santiago</div>
+        <div class="header-name" id="header-name">⚡ Santiago</div>
         <div class="header-level" id="header-level">Iniciante</div>
       </div>
       <div class="header-xp-section">
         <div class="header-xp-labels">
           <span>XP</span>
-          <span id="header-xp-text">0 / 500</span>
+          <span id="header-xp-text">0 XP</span>
         </div>
         <div class="header-xp-bar">
           <div class="header-xp-fill" id="header-xp-fill" style="width:0%"></div>
@@ -1487,6 +1745,9 @@ body {
           <span class="header-stat-icon">💰</span>
           <span class="header-stat-val money" id="header-money">R$0</span>
         </div>
+        <button class="btn-logout" onclick="doLogout()" title="Sair">
+          <span>↩</span> Sair
+        </button>
       </div>
     </header>
 
@@ -1505,10 +1766,10 @@ body {
       <div class="page" id="page-dashboard">
         <div class="welcome-card">
           <div class="welcome-title" id="welcome-title">Bem-vindo de volta, Santiago! 🔥</div>
-          <div class="welcome-sub" id="welcome-sub">A jornada para dominar a IA é como encontrar as frutas do diabo certas no Grand Line. Cada módulo que você completa é um poder novo desbloqueado. Vamos nessa?</div>
+          <div class="welcome-sub" id="welcome-sub">A jornada para dominar a IA é como encontrar as frutas do diabo certas no Grand Line.</div>
         </div>
 
-        <div class="stats-grid" id="stats-grid">
+        <div class="stats-grid">
           <div class="stat-card">
             <div class="stat-card-icon">✨</div>
             <div class="stat-card-val" id="stat-xp">0</div>
@@ -1527,7 +1788,7 @@ body {
           <div class="stat-card">
             <div class="stat-card-icon">🎯</div>
             <div class="stat-card-val" id="stat-projects">0</div>
-            <div class="stat-card-label">Projetos Entregues</div>
+            <div class="stat-card-label">Missões Aprovadas</div>
           </div>
           <div class="stat-card">
             <div class="stat-card-icon">💰</div>
@@ -1536,10 +1797,8 @@ body {
           </div>
         </div>
 
-        <!-- Next lesson -->
         <div id="next-lesson-area"></div>
 
-        <!-- Two columns: module progress + recent achievements -->
         <div class="two-col">
           <div class="section-card">
             <div class="section-card-title">Progresso por Módulo</div>
@@ -1562,7 +1821,7 @@ body {
       <!-- MISSIONS PAGE -->
       <div class="page" id="page-missions">
         <div class="page-title">⚔️ Missões</div>
-        <div class="page-subtitle">Complete missões reais e ganhe Sparks + recompensa em dinheiro. Só conta se publicar no ar.</div>
+        <div class="page-subtitle">Complete missões reais e ganhe Sparks + recompensa em dinheiro. A mãe precisa aprovar cada entrega.</div>
         <div class="missions-list" id="missions-list"></div>
       </div>
 
@@ -1573,9 +1832,9 @@ body {
         <div class="achievements-grid" id="achievements-grid"></div>
       </div>
 
-    </div><!-- #content -->
-  </div><!-- #main -->
-</div><!-- #app -->
+    </div>
+  </div>
+</div>
 
 <!-- LESSON MODAL -->
 <div class="modal-overlay" id="lesson-modal-overlay" onclick="closeLessonModal(event)">
@@ -1586,14 +1845,18 @@ body {
       <button class="modal-close" onclick="closeLessonModal(null, true)">✕</button>
     </div>
     <div class="modal-body">
-      <div class="modal-desc" id="lesson-modal-desc"></div>
-      <div class="search-tip-box">
+      <!-- Conteúdo escrito da aula -->
+      <div id="lesson-content-area" class="lesson-content-area" style="display:none;"></div>
+
+      <!-- Dica de pesquisa -->
+      <div class="search-tip-box" id="lesson-tip-box">
         <div class="search-tip-icon">🔍</div>
         <div class="search-tip-content">
           <div class="search-tip-label">O que pesquisar no YouTube:</div>
           <div class="search-tip-text" id="lesson-modal-tip"></div>
         </div>
       </div>
+
       <button class="btn-complete not-done" id="lesson-complete-btn" onclick="toggleLessonComplete()">
         ✅ Marcar como Concluída — +15 XP
       </button>
@@ -1617,15 +1880,22 @@ body {
   </div>
 </div>
 
-<!-- DELIVERY MODAL -->
-<div class="modal-overlay" id="delivery-modal-overlay" onclick="closeDeliveryModal(event)">
-  <div class="delivery-modal">
-    <h3>🚀 Entregar Missão</h3>
-    <p id="delivery-mission-name"></p>
-    <textarea class="delivery-textarea" id="delivery-notes" placeholder="Link do projeto, observações, notas... (opcional)"></textarea>
-    <div class="delivery-btns">
-      <button class="btn-cancel" onclick="closeDeliveryModal(null, true)">Cancelar</button>
-      <button class="btn-confirm" onclick="confirmDelivery()">✅ Confirmar Entrega</button>
+<!-- SUBMIT MISSION MODAL -->
+<div class="modal-overlay" id="submit-modal-overlay" onclick="closeSubmitModal(event)">
+  <div class="submit-modal">
+    <h3>🚀 Enviar Missão</h3>
+    <div class="mission-name-badge" id="submit-mission-name">Nome da Missão</div>
+    <div class="submit-field">
+      <label class="submit-label">Descreva o que você fez *</label>
+      <textarea class="submit-textarea" id="submit-notes" placeholder="Explique o que você criou, as ferramentas que usou e o que aprendeu..."></textarea>
+    </div>
+    <div class="submit-field">
+      <label class="submit-label">Link do projeto *</label>
+      <input type="url" class="submit-url-input" id="submit-url" placeholder="https://seusite.vercel.app ou https://github.com/...">
+    </div>
+    <div class="submit-btns">
+      <button class="btn-cancel" onclick="closeSubmitModal(null, true)">Cancelar</button>
+      <button class="btn-confirm" onclick="confirmSubmit()">✅ Enviar para Aprovação</button>
     </div>
   </div>
 </div>
@@ -1647,21 +1917,122 @@ const db = createClient(
 // STATE
 // ============================================================
 let state = {
+  session: null,
+  userId: null,
   modules: [],
   lessons: [],
-  progress: {},      // lesson_id -> {completed, completed_at}
-  notes: {},         // lesson_id -> {content, updated_at}
-  videos: {},        // lesson_id -> [{id, url, title, saved_at}]
+  progress: {},
+  notes: {},
+  videos: {},
   projects: [],
-  projectCompletions: new Set(), // project_id set
-  projectCompletionData: {},     // project_id -> {notes, completed_at}
+  projectCompletions: {},   // project_id -> completion object (with status)
   achievements: [],
   unlockedAchievements: new Set(),
   unlockedAchievementDates: {},
   currentPage: 'dashboard',
   currentLesson: null,
-  currentDeliveryProject: null,
+  currentSubmitProject: null,
+  isResubmit: false,
 };
+
+// ============================================================
+// AUTH
+// ============================================================
+async function initAuth() {
+  const { data: { session } } = await db.auth.getSession();
+
+  if (!session) {
+    showLoginScreen();
+    return;
+  }
+
+  // Check role
+  const { data: profile } = await db
+    .from('profiles')
+    .select('role, display_name')
+    .eq('id', session.user.id)
+    .single();
+
+  if (profile && profile.role === 'admin') {
+    window.location.href = 'admin.html';
+    return;
+  }
+
+  state.session = session;
+  state.userId = session.user.id;
+
+  showApp();
+}
+
+function showLoginScreen() {
+  document.getElementById('login-screen').classList.add('active');
+  document.getElementById('app').classList.remove('active');
+}
+
+function showApp() {
+  document.getElementById('login-screen').classList.remove('active');
+  document.getElementById('app').classList.add('active');
+  loadAndInit();
+}
+
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const btn = document.getElementById('btn-login');
+  const errEl = document.getElementById('login-error');
+
+  if (!email || !password) {
+    errEl.textContent = 'Preencha o email e a senha.';
+    errEl.classList.add('visible');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Entrando...';
+  errEl.classList.remove('visible');
+
+  const { data, error } = await db.auth.signInWithPassword({ email, password });
+
+  if (error || !data.session) {
+    btn.disabled = false;
+    btn.textContent = 'Entrar no VORTEX';
+    errEl.textContent = 'Email ou senha incorretos. Tente novamente.';
+    errEl.classList.add('visible');
+    return;
+  }
+
+  // Check role
+  const { data: profile } = await db
+    .from('profiles')
+    .select('role')
+    .eq('id', data.session.user.id)
+    .single();
+
+  if (profile && profile.role === 'admin') {
+    window.location.href = 'admin.html';
+    return;
+  }
+
+  state.session = data.session;
+  state.userId = data.session.user.id;
+  btn.disabled = false;
+  btn.textContent = 'Entrar no VORTEX';
+  showApp();
+}
+
+// Enter key support
+document.getElementById('login-password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+document.getElementById('login-email').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('login-password').focus();
+});
+
+async function doLogout() {
+  await db.auth.signOut();
+  window.location.href = 'index.html';
+}
 
 // ============================================================
 // COMPUTED STATS
@@ -1669,19 +2040,24 @@ let state = {
 function computeStats() {
   const completedLessons = state.lessons.filter(l => state.progress[l.id]?.completed);
   const totalXP = completedLessons.reduce((sum, l) => sum + (l.xp_reward || 15), 0);
-  const completedProjects = state.projectCompletions.size;
-  const totalBRL = [...state.projectCompletions].reduce((sum, pid) => {
-    const p = state.projects.find(x => x.id === pid);
-    return sum + (p ? p.brl_reward : 0);
+
+  const approvedCompletions = Object.values(state.projectCompletions).filter(pc => pc.status === 'approved');
+  const completedProjects = approvedCompletions.length;
+  const totalBRL = approvedCompletions.reduce((sum, pc) => {
+    const p = state.projects.find(x => x.id === pc.project_id);
+    return sum + (p ? (p.brl_reward || 0) : 0);
   }, 0);
+
   const achievementSparks = [...state.unlockedAchievements].reduce((sum, aid) => {
     const a = state.achievements.find(x => x.id === aid);
-    return sum + (a ? a.sparks_bonus : 0);
+    return sum + (a ? (a.sparks_bonus || 0) : 0);
   }, 0);
-  const projectSparks = [...state.projectCompletions].reduce((sum, pid) => {
-    const p = state.projects.find(x => x.id === pid);
-    return sum + (p ? p.sparks_reward : 0);
+
+  const projectSparks = approvedCompletions.reduce((sum, pc) => {
+    const p = state.projects.find(x => x.id === pc.project_id);
+    return sum + (p ? (p.sparks_reward || 0) : 0);
   }, 0);
+
   const totalSparks = achievementSparks + projectSparks;
 
   const completedModules = state.modules.filter(m => {
@@ -1702,17 +2078,17 @@ function computeStats() {
 
 function getLevelInfo(xp) {
   const levels = [
-    { name: 'Iniciante',    min: 0,    max: 150,  next: 150  },
-    { name: 'Aprendiz',     min: 150,  max: 400,  next: 400  },
-    { name: 'Construtor',   min: 400,  max: 750,  next: 750  },
-    { name: 'Analista',     min: 750,  max: 1200, next: 1200 },
-    { name: 'Game Dev',     min: 1200, max: 1800, next: 1800 },
-    { name: 'Arquiteto',    min: 1800, max: 2500, next: 2500 },
-    { name: 'Mestre',       min: 2500, max: 9999, next: 9999 },
+    { name: 'Iniciante',    min: 0,    max: 150  },
+    { name: 'Aprendiz',     min: 150,  max: 400  },
+    { name: 'Construtor',   min: 400,  max: 750  },
+    { name: 'Analista',     min: 750,  max: 1200 },
+    { name: 'Game Dev',     min: 1200, max: 1800 },
+    { name: 'Arquiteto',    min: 1800, max: 2500 },
+    { name: 'Mestre',       min: 2500, max: 9999 },
   ];
   const lvl = levels.find(l => xp >= l.min && xp < l.max) || levels[levels.length - 1];
   const pct = lvl.min === lvl.max ? 100 : Math.min(100, Math.round(((xp - lvl.min) / (lvl.max - lvl.min)) * 100));
-  return { name: lvl.name, pct, current: xp - lvl.min, next: lvl.max - lvl.min };
+  return { name: lvl.name, pct };
 }
 
 // ============================================================
@@ -1720,6 +2096,7 @@ function getLevelInfo(xp) {
 // ============================================================
 async function loadAll() {
   try {
+    const uid = state.userId;
     const [
       { data: modules },
       { data: lessons },
@@ -1733,27 +2110,23 @@ async function loadAll() {
     ] = await Promise.all([
       db.from('modules').select('*').order('order_index'),
       db.from('lessons').select('*').order('order_index'),
-      db.from('progress').select('*'),
-      db.from('notes').select('*'),
-      db.from('videos').select('*').order('saved_at', { ascending: false }),
+      db.from('progress').select('*').eq('user_id', uid),
+      db.from('notes').select('*').eq('user_id', uid),
+      db.from('videos').select('*').eq('user_id', uid).order('saved_at', { ascending: false }),
       db.from('projects').select('*').order('order_index'),
-      db.from('project_completions').select('*'),
+      db.from('project_completions').select('*').eq('user_id', uid),
       db.from('achievements').select('*'),
-      db.from('unlocked_achievements').select('*'),
+      db.from('unlocked_achievements').select('*').eq('user_id', uid),
     ]);
 
     state.modules = modules || [];
     state.lessons = lessons || [];
 
     state.progress = {};
-    (progress || []).forEach(p => {
-      state.progress[p.lesson_id] = p;
-    });
+    (progress || []).forEach(p => { state.progress[p.lesson_id] = p; });
 
     state.notes = {};
-    (notes || []).forEach(n => {
-      state.notes[n.lesson_id] = n;
-    });
+    (notes || []).forEach(n => { state.notes[n.lesson_id] = n; });
 
     state.videos = {};
     (videos || []).forEach(v => {
@@ -1762,11 +2135,13 @@ async function loadAll() {
     });
 
     state.projects = projects || [];
-    state.projectCompletions = new Set();
-    state.projectCompletionData = {};
+    state.projectCompletions = {};
     (projectCompletions || []).forEach(pc => {
-      state.projectCompletions.add(pc.project_id);
-      state.projectCompletionData[pc.project_id] = pc;
+      // Keep the latest per project_id
+      if (!state.projectCompletions[pc.project_id] ||
+          new Date(pc.created_at) > new Date(state.projectCompletions[pc.project_id].created_at)) {
+        state.projectCompletions[pc.project_id] = pc;
+      }
     });
 
     state.achievements = achievements || [];
@@ -1782,6 +2157,26 @@ async function loadAll() {
     console.error('Erro ao carregar dados:', e);
     return false;
   }
+}
+
+// ============================================================
+// INIT
+// ============================================================
+async function loadAndInit() {
+  document.getElementById('loading-page').style.display = 'block';
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+
+  const ok = await loadAll();
+
+  document.getElementById('loading-page').style.display = 'none';
+
+  if (!ok) {
+    showToast('Erro ao conectar com o banco de dados', 'error');
+    return;
+  }
+
+  renderHeader();
+  navigate('dashboard');
 }
 
 // ============================================================
@@ -1813,7 +2208,6 @@ function renderHeader() {
   document.getElementById('header-sparks').textContent = stats.totalSparks.toLocaleString();
   document.getElementById('header-money').textContent = `R$${stats.totalBRL}`;
 
-  // Sidebar progress
   const pct = stats.totalLessons > 0
     ? Math.round((stats.completedLessons / stats.totalLessons) * 100)
     : 0;
@@ -1826,31 +2220,25 @@ function renderHeader() {
 // ============================================================
 function renderDashboard() {
   const stats = computeStats();
-  const level = getLevelInfo(stats.totalXP);
 
-  // Welcome messages rotation
   const messages = [
     `A jornada para dominar a IA é como encontrar as frutas do diabo certas no Grand Line. Cada módulo que você completa é um poder novo desbloqueado. Vamos nessa?`,
     `Os Vingadores não viraram heróis da noite pro dia. Cada aula completada é um treino no Compound dos Avengers. Continue!`,
     `No Blox Fruits, os melhores players são os que mais farmaram. Aqui é igual — cada aula é XP real. Você está no caminho certo.`,
     `Quem sabe fazer o pedido certo para a IA tem o poder do usuário do Ope Ope no Mi. Você está aprendendo a usar o poder mais raro do mundo.`,
   ];
-  const msg = messages[Math.floor(Date.now() / 60000) % messages.length];
-  document.getElementById('welcome-sub').textContent = msg;
+  document.getElementById('welcome-sub').textContent = messages[Math.floor(Date.now() / 60000) % messages.length];
 
-  // Dynamically update welcome title
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite';
   document.getElementById('welcome-title').textContent = `${greeting}, Santiago! 🔥`;
 
-  // Stats
   document.getElementById('stat-xp').textContent = stats.totalXP.toLocaleString();
   document.getElementById('stat-sparks').textContent = stats.totalSparks.toLocaleString();
   document.getElementById('stat-lessons').textContent = stats.completedLessons;
   document.getElementById('stat-projects').textContent = stats.completedProjects;
   document.getElementById('stat-money').textContent = `R$${stats.totalBRL}`;
 
-  // Next lesson
   const nextLesson = state.lessons.find(l => !state.progress[l.id]?.completed);
   const nextArea = document.getElementById('next-lesson-area');
   if (nextLesson) {
@@ -1879,7 +2267,6 @@ function renderDashboard() {
     `;
   }
 
-  // Module progress list
   const progList = document.getElementById('module-progress-list');
   progList.innerHTML = state.modules.map(m => {
     const mLessons = state.lessons.filter(l => l.module_id === m.id);
@@ -1901,7 +2288,6 @@ function renderDashboard() {
     `;
   }).join('');
 
-  // Recent achievements
   const recentEl = document.getElementById('recent-achievements');
   const recent = [...state.unlockedAchievements]
     .map(id => ({
@@ -1929,8 +2315,7 @@ function renderDashboard() {
             <div class="recent-ach-date">${formatDate(r.date)}</div>
           </div>
         </div>
-      `).join('') +
-    `</div>`;
+      `).join('') + `</div>`;
   }
 }
 
@@ -1944,7 +2329,6 @@ function renderModules() {
     const done = mLessons.filter(l => state.progress[l.id]?.completed).length;
     const pct = mLessons.length > 0 ? Math.round((done / mLessons.length) * 100) : 0;
 
-    // Lock if previous module < 80% complete
     let locked = false;
     if (idx > 0) {
       const prev = state.modules[idx - 1];
@@ -1960,7 +2344,7 @@ function renderModules() {
         <div class="lesson-item" onclick="openLesson(${l.id})">
           <div class="lesson-check ${isDone ? 'done' : ''}">${isDone ? '✓' : ''}</div>
           <span class="lesson-item-title ${isDone ? 'done' : ''}">${l.title}</span>
-          <span class="lesson-xp">+${l.xp_reward} XP</span>
+          <span class="lesson-xp">+${l.xp_reward || 15} XP</span>
           <button class="btn-open-lesson" onclick="event.stopPropagation(); openLesson(${l.id})">Abrir</button>
         </div>
       `;
@@ -1981,17 +2365,14 @@ function renderModules() {
             <div class="module-card-bar-fill" style="width:${pct}%; background:${m.color};"></div>
           </div>
         </div>
-        <div class="lesson-list" id="lesson-list-${m.id}">
-          ${lessonsHTML}
-        </div>
+        <div class="lesson-list" id="lesson-list-${m.id}">${lessonsHTML}</div>
       </div>
     `;
   }).join('');
 }
 
 function toggleModuleLessons(moduleId) {
-  const list = document.getElementById('lesson-list-' + moduleId);
-  list.classList.toggle('open');
+  document.getElementById('lesson-list-' + moduleId).classList.toggle('open');
 }
 
 // ============================================================
@@ -2010,22 +2391,64 @@ const LEVEL_COLORS = {
 
 function renderMissions() {
   const list = document.getElementById('missions-list');
+
+  if (state.projects.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">⚔️</div>Nenhuma missão disponível ainda.</div>`;
+    return;
+  }
+
   list.innerHTML = state.projects.map((p, idx) => {
-    const isCompleted = state.projectCompletions.has(p.id);
     const color = LEVEL_COLORS[p.level_name] || '#7c3aed';
-    const reqs = Array.isArray(p.requirements) ? p.requirements : (p.requirements || []);
+    const completion = state.projectCompletions[p.id];
+    const status = completion ? (completion.status || 'pending') : null;
+    const reqs = Array.isArray(p.requirements) ? p.requirements : [];
 
     const reqsHTML = reqs.map(r => `
       <div class="req-item">
-        <div class="req-dot" style="border-color: ${color}40;">${isCompleted ? '✓' : ''}</div>
+        <div class="req-dot" style="border-color: ${color}40; ${status === 'approved' ? 'background:var(--green);border-color:var(--green);color:white;' : ''}">
+          ${status === 'approved' ? '✓' : ''}
+        </div>
         <span>${r}</span>
       </div>
     `).join('');
 
-    const completedData = state.projectCompletionData[p.id];
+    let feedbackHTML = '';
+    if (completion && completion.admin_feedback) {
+      feedbackHTML = `
+        <div class="feedback-box ${status}">
+          <strong>${status === 'approved' ? 'Mensagem da mãe:' : 'O que melhorar:'}</strong>
+          ${completion.admin_feedback}
+        </div>
+      `;
+    }
+
+    let footerHTML = '';
+    if (!completion) {
+      footerHTML = `
+        <span class="text-xs text-muted">Complete os requisitos antes de enviar</span>
+        <button class="btn-deliver" onclick="openSubmitModal(${p.id}, false)">🚀 Enviar Missão</button>
+      `;
+    } else if (status === 'pending') {
+      footerHTML = `
+        <span class="status-badge pending">🕐 Em Análise — aguardando aprovação</span>
+        <span class="text-xs text-muted">Enviado em ${formatDate(completion.created_at || completion.completed_at)}</span>
+      `;
+    } else if (status === 'approved') {
+      footerHTML = `
+        <span class="status-badge approved">✅ Aprovado! Recompensa creditada</span>
+        <span class="text-xs text-muted">${formatDate(completion.admin_reviewed_at)}</span>
+      `;
+    } else if (status === 'rejected') {
+      footerHTML = `
+        <span class="status-badge rejected">❌ Precisa melhorar</span>
+        <button class="btn-resubmit" onclick="openSubmitModal(${p.id}, true)">🔄 Reenviar</button>
+      `;
+    }
+
+    const cardClass = status ? `mission-card status-${status}` : 'mission-card';
 
     return `
-      <div class="mission-card ${isCompleted ? 'completed-mission' : ''}">
+      <div class="${cardClass}">
         <div class="mission-header">
           <div class="mission-number" style="background: linear-gradient(135deg, ${color}bb, ${color});">${idx + 1}</div>
           <div class="mission-info">
@@ -2035,26 +2458,19 @@ function renderMissions() {
           <div class="mission-meta">
             <div class="level-badge" style="background: ${color}22; color: ${color};">${p.level_name}</div>
             <div class="mission-rewards">
-              <span class="reward-sparks">⚡${p.sparks_reward}</span>
-              <span class="reward-brl">R$${p.brl_reward}</span>
+              <span class="reward-sparks">⚡${p.sparks_reward || 0}</span>
+              <span class="reward-brl">R$${p.brl_reward || 0}</span>
             </div>
           </div>
         </div>
-        <div class="mission-requirements">
-          <div class="req-title">Requisitos de Entrega</div>
-          <div class="req-list">${reqsHTML}</div>
-        </div>
-        <div class="mission-footer">
-          ${isCompleted ? `
-            <div class="completed-badge">
-              👑 CONCLUÍDO — ${formatDate(completedData?.completed_at)}
-            </div>
-            ${completedData?.notes ? `<span class="text-xs text-muted">${completedData.notes.substring(0, 60)}${completedData.notes.length > 60 ? '...' : ''}</span>` : ''}
-          ` : `
-            <span class="text-xs text-muted">Complete todos os requisitos antes de entregar</span>
-            <button class="btn-deliver" onclick="openDeliveryModal(${p.id})">🚀 Marcar como Entregue</button>
-          `}
-        </div>
+        ${reqsHTML ? `
+          <div class="mission-requirements">
+            <div class="req-title">Requisitos de Entrega</div>
+            <div class="req-list">${reqsHTML}</div>
+          </div>
+        ` : ''}
+        ${feedbackHTML}
+        <div class="mission-footer">${footerHTML}</div>
       </div>
     `;
   }).join('');
@@ -2091,30 +2507,46 @@ function openLesson(lessonId) {
 
   state.currentLesson = lessonId;
 
-  // Badge
   const badge = document.getElementById('lesson-modal-badge');
   badge.textContent = mod ? mod.title : 'Módulo';
   badge.style.background = mod ? mod.color + '22' : '#7c3aed22';
   badge.style.color = mod ? mod.color : '#9d5cf5';
 
   document.getElementById('lesson-modal-title').textContent = lesson.title;
-  document.getElementById('lesson-modal-desc').textContent = lesson.description;
-  document.getElementById('lesson-modal-tip').textContent = lesson.search_tip;
+  document.getElementById('lesson-modal-tip').textContent = lesson.search_tip || '';
 
-  // Complete button
+  // Show/hide tip box
+  const tipBox = document.getElementById('lesson-tip-box');
+  tipBox.style.display = lesson.search_tip ? 'flex' : 'none';
+
+  // Lesson content
+  const contentArea = document.getElementById('lesson-content-area');
+  if (lesson.content && lesson.content.trim()) {
+    contentArea.innerHTML = lesson.content;
+    contentArea.style.display = 'block';
+  } else {
+    contentArea.innerHTML = '';
+    contentArea.style.display = 'none';
+    // fallback to description
+    if (lesson.description) {
+      const descEl = document.getElementById('lesson-modal-desc') || (() => {
+        const d = document.createElement('div');
+        d.id = 'lesson-modal-desc';
+        d.className = 'modal-desc';
+        contentArea.parentNode.insertBefore(d, contentArea);
+        return d;
+      })();
+    }
+  }
+
   updateCompleteBtnState();
-
-  // Videos
   renderVideoList();
 
-  // Notes
   const note = state.notes[lessonId];
   document.getElementById('notes-textarea').value = note ? note.content : '';
   document.getElementById('notes-updated').textContent = note
     ? `Última atualização: ${formatDate(note.updated_at)}`
     : '';
-
-  // Clear video input
   document.getElementById('video-url-input').value = '';
 
   document.getElementById('lesson-modal-overlay').classList.add('open');
@@ -2141,44 +2573,42 @@ function updateCompleteBtnState() {
 async function toggleLessonComplete() {
   const lessonId = state.currentLesson;
   if (!lessonId) return;
-
   const isDone = state.progress[lessonId]?.completed;
+  const uid = state.userId;
 
   if (isDone) {
-    // Unmark
     const { error } = await db
       .from('progress')
       .update({ completed: false, completed_at: null })
-      .eq('lesson_id', lessonId);
+      .eq('lesson_id', lessonId)
+      .eq('user_id', uid);
     if (error) { showToast('Erro ao atualizar progresso', 'error'); return; }
-    state.progress[lessonId] = { lesson_id: lessonId, completed: false, completed_at: null };
+    state.progress[lessonId] = { ...state.progress[lessonId], completed: false, completed_at: null };
     showToast('Aula desmarcada', 'info');
   } else {
-    // Mark complete
     const now = new Date().toISOString();
     const existing = state.progress[lessonId];
     if (existing) {
       const { error } = await db
         .from('progress')
         .update({ completed: true, completed_at: now })
-        .eq('lesson_id', lessonId);
+        .eq('lesson_id', lessonId)
+        .eq('user_id', uid);
       if (error) { showToast('Erro ao salvar progresso', 'error'); return; }
     } else {
       const { error } = await db
         .from('progress')
-        .insert({ lesson_id: lessonId, completed: true, completed_at: now });
+        .insert({ lesson_id: lessonId, user_id: uid, completed: true, completed_at: now });
       if (error) { showToast('Erro ao salvar progresso', 'error'); return; }
     }
-    state.progress[lessonId] = { lesson_id: lessonId, completed: true, completed_at: now };
+    state.progress[lessonId] = { lesson_id: lessonId, user_id: uid, completed: true, completed_at: now };
     showToast('⚡ Aula concluída! +15 XP', 'success');
-    await checkAchievements();
     animateXP();
+    await checkAchievements();
   }
 
   updateCompleteBtnState();
   renderHeader();
-
-  // Refresh current page
   if (state.currentPage === 'modules') renderModules();
   if (state.currentPage === 'dashboard') renderDashboard();
 }
@@ -2201,16 +2631,16 @@ function extractYouTubeId(url) {
 async function saveVideo() {
   const url = document.getElementById('video-url-input').value.trim();
   if (!url) { showToast('Cole uma URL do YouTube', 'warning'); return; }
-
   const videoId = extractYouTubeId(url);
   if (!videoId) { showToast('URL do YouTube inválida', 'error'); return; }
 
   const lessonId = state.currentLesson;
+  const uid = state.userId;
   const title = `Vídeo — ${videoId}`;
 
   const { data, error } = await db
     .from('videos')
-    .insert({ lesson_id: lessonId, url: url, title: title })
+    .insert({ lesson_id: lessonId, user_id: uid, url, title })
     .select()
     .single();
 
@@ -2218,7 +2648,6 @@ async function saveVideo() {
 
   if (!state.videos[lessonId]) state.videos[lessonId] = [];
   state.videos[lessonId].unshift(data);
-
   document.getElementById('video-url-input').value = '';
   renderVideoList();
   showToast('🎬 Vídeo salvo!', 'success');
@@ -2239,7 +2668,7 @@ function renderVideoList() {
     const thumb = vid ? `https://img.youtube.com/vi/${vid}/mqdefault.jpg` : '';
     return `
       <div class="video-item" id="video-item-${v.id}">
-        <div class="video-item-header" onclick="toggleVideoPlayer(${v.id}, '${vid}')">
+        <div class="video-item-header" onclick="toggleVideoPlayer(${v.id})">
           <div class="video-thumb">
             ${thumb ? `<img src="${thumb}" alt="thumb" onerror="this.style.display='none'">` : ''}
           </div>
@@ -2254,15 +2683,13 @@ function renderVideoList() {
   }).join('');
 }
 
-function toggleVideoPlayer(videoId, ytId) {
-  const player = document.getElementById('video-player-' + videoId);
-  player.classList.toggle('open');
+function toggleVideoPlayer(videoId) {
+  document.getElementById('video-player-' + videoId).classList.toggle('open');
 }
 
 async function deleteVideo(videoId) {
   const { error } = await db.from('videos').delete().eq('id', videoId);
   if (error) { showToast('Erro ao deletar vídeo', 'error'); return; }
-
   const lessonId = state.currentLesson;
   state.videos[lessonId] = (state.videos[lessonId] || []).filter(v => v.id !== videoId);
   renderVideoList();
@@ -2276,6 +2703,7 @@ async function saveNote() {
   const lessonId = state.currentLesson;
   const content = document.getElementById('notes-textarea').value;
   const now = new Date().toISOString();
+  const uid = state.userId;
 
   const existing = state.notes[lessonId];
   if (existing) {
@@ -2288,7 +2716,7 @@ async function saveNote() {
   } else {
     const { data, error } = await db
       .from('notes')
-      .insert({ lesson_id: lessonId, content, updated_at: now })
+      .insert({ lesson_id: lessonId, user_id: uid, content, updated_at: now })
       .select()
       .single();
     if (error) { showToast('Erro ao salvar nota', 'error'); return; }
@@ -2299,54 +2727,71 @@ async function saveNote() {
   showToast('📝 Nota salva!', 'success');
 }
 
-// Auto-save on blur
 document.getElementById('notes-textarea').addEventListener('blur', () => {
   if (state.currentLesson) saveNote();
 });
 
 // ============================================================
-// DELIVERY MODAL
+// SUBMIT MISSION MODAL
 // ============================================================
-function openDeliveryModal(projectId) {
-  state.currentDeliveryProject = projectId;
+function openSubmitModal(projectId, isResubmit) {
+  state.currentSubmitProject = projectId;
+  state.isResubmit = isResubmit;
   const p = state.projects.find(x => x.id === projectId);
-  document.getElementById('delivery-mission-name').textContent =
-    `Entregar: ${p ? p.title : 'Missão'}. Cole o link do projeto ou adicione observações abaixo.`;
-  document.getElementById('delivery-notes').value = '';
-  document.getElementById('delivery-modal-overlay').classList.add('open');
+  document.getElementById('submit-mission-name').textContent = p ? p.title : 'Missão';
+  document.getElementById('submit-notes').value = '';
+  document.getElementById('submit-url').value = '';
+  document.querySelector('#submit-modal-overlay .submit-modal h3').textContent =
+    isResubmit ? '🔄 Reenviar Missão' : '🚀 Enviar Missão';
+  document.getElementById('submit-modal-overlay').classList.add('open');
 }
 
-function closeDeliveryModal(event, force = false) {
+function closeSubmitModal(event, force = false) {
   if (!force && event && event.target !== event.currentTarget) return;
-  document.getElementById('delivery-modal-overlay').classList.remove('open');
-  state.currentDeliveryProject = null;
+  document.getElementById('submit-modal-overlay').classList.remove('open');
+  state.currentSubmitProject = null;
 }
 
-async function confirmDelivery() {
-  const projectId = state.currentDeliveryProject;
+async function confirmSubmit() {
+  const projectId = state.currentSubmitProject;
   if (!projectId) return;
 
-  const notes = document.getElementById('delivery-notes').value;
+  const notes = document.getElementById('submit-notes').value.trim();
+  const url = document.getElementById('submit-url').value.trim();
+  const uid = state.userId;
+
+  if (!notes) {
+    showToast('Descreva o que você fez antes de enviar', 'warning');
+    return;
+  }
+  if (!url) {
+    showToast('Adicione o link do projeto antes de enviar', 'warning');
+    return;
+  }
+
   const now = new Date().toISOString();
 
   const { data, error } = await db
     .from('project_completions')
-    .insert({ project_id: projectId, notes, completed_at: now })
+    .insert({
+      project_id: projectId,
+      user_id: uid,
+      status: 'pending',
+      submission_notes: notes,
+      submission_url: url,
+      completed_at: now,
+    })
     .select()
     .single();
 
-  if (error) { showToast('Erro ao registrar entrega', 'error'); return; }
+  if (error) { showToast('Erro ao enviar missão', 'error'); return; }
 
-  state.projectCompletions.add(projectId);
-  state.projectCompletionData[projectId] = data;
+  state.projectCompletions[projectId] = data;
 
-  closeDeliveryModal(null, true);
-  showToast('🚀 Missão entregue! Recompensa desbloqueada!', 'success');
-
-  await checkAchievements();
-  renderHeader();
+  closeSubmitModal(null, true);
+  showToast('🚀 Missão enviada para aprovação!', 'success');
   renderMissions();
-  if (state.currentPage === 'dashboard') renderDashboard();
+  renderHeader();
 }
 
 // ============================================================
@@ -2354,31 +2799,24 @@ async function confirmDelivery() {
 // ============================================================
 async function checkAchievements() {
   const stats = computeStats();
+  const uid = state.userId;
 
   for (const ach of state.achievements) {
     if (state.unlockedAchievements.has(ach.id)) continue;
 
     let unlocked = false;
     switch (ach.condition_type) {
-      case 'lessons_completed':
-        unlocked = stats.completedLessons >= ach.condition_value;
-        break;
-      case 'modules_completed':
-        unlocked = stats.completedModules >= ach.condition_value;
-        break;
-      case 'projects_completed':
-        unlocked = stats.completedProjects >= ach.condition_value;
-        break;
-      case 'brl_earned':
-        unlocked = stats.totalBRL >= ach.condition_value;
-        break;
+      case 'lessons_completed':  unlocked = stats.completedLessons >= ach.condition_value;  break;
+      case 'modules_completed':  unlocked = stats.completedModules >= ach.condition_value;  break;
+      case 'projects_completed': unlocked = stats.completedProjects >= ach.condition_value; break;
+      case 'brl_earned':         unlocked = stats.totalBRL >= ach.condition_value;           break;
     }
 
     if (unlocked) {
       const now = new Date().toISOString();
       const { error } = await db
         .from('unlocked_achievements')
-        .insert({ achievement_id: ach.id, unlocked_at: now });
+        .insert({ achievement_id: ach.id, user_id: uid, unlocked_at: now });
 
       if (!error) {
         state.unlockedAchievements.add(ach.id);
@@ -2390,14 +2828,32 @@ async function checkAchievements() {
 }
 
 // ============================================================
+// CONFETTI
+// ============================================================
+function launchConfetti() {
+  const colors = ['#7c3aed', '#06b6d4', '#10b981', '#f59e0b', '#ec4899'];
+  for (let i = 0; i < 60; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-particle';
+    p.style.cssText = `
+      left: ${Math.random() * 100}vw;
+      top: ${-10 - Math.random() * 20}px;
+      background: ${colors[Math.floor(Math.random() * colors.length)]};
+      animation-delay: ${Math.random() * 0.5}s;
+      animation-duration: ${1.5 + Math.random() * 1}s;
+    `;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 3000);
+  }
+}
+
+// ============================================================
 // ANIMATIONS
 // ============================================================
 function animateXP() {
   const fill = document.getElementById('header-xp-fill');
   fill.style.filter = 'brightness(1.5) drop-shadow(0 0 6px rgba(124,58,237,0.8))';
-  setTimeout(() => {
-    fill.style.filter = '';
-  }, 800);
+  setTimeout(() => { fill.style.filter = ''; }, 800);
 }
 
 // ============================================================
@@ -2409,7 +2865,6 @@ function showToast(msg, type = 'info') {
   toast.className = `toast ${type}`;
   toast.innerHTML = `<span>${msg}</span>`;
   container.appendChild(toast);
-
   setTimeout(() => {
     toast.classList.add('hiding');
     setTimeout(() => toast.remove(), 300);
@@ -2421,31 +2876,13 @@ function showToast(msg, type = 'info') {
 // ============================================================
 function formatDate(dateStr) {
   if (!dateStr) return '';
-  const d = new Date(dateStr);
-  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  return new Date(dateStr).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
 }
 
 // ============================================================
-// INIT
+// BOOT
 // ============================================================
-async function init() {
-  document.getElementById('loading-page').style.display = 'block';
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-
-  const ok = await loadAll();
-
-  document.getElementById('loading-page').style.display = 'none';
-
-  if (!ok) {
-    showToast('Erro ao conectar com o banco de dados', 'error');
-    return;
-  }
-
-  renderHeader();
-  navigate('dashboard');
-}
-
-init();
+initAuth();
 </script>
 </body>
 </html>
